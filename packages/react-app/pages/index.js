@@ -31,7 +31,7 @@ function Home({ web3 }) {
         </div>
         <div className="text-center">
           <Contract
-            name="YourContract"
+            name="GuildKudos"
             signer={web3.userSigner}
             provider={web3.localProvider}
             address={web3.address}
