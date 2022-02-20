@@ -1,5 +1,5 @@
-# kudos 
-Incentives and Rewards for Farmers and our Food System
+# farm kudos
+#### Upgrading our Food System through Rewards and Incentivization
 
 <img src="media/Frame_50.png">
 
