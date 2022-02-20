@@ -274,6 +274,21 @@ module.exports = {
           optimizer: {
             enabled: true,
             runs: 200,
+            details: {
+              yul: false
+            }
+          },
+        },
+      },
+      {
+        version: "0.8.8",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+            details: {
+              yul: false
+            }
           },
         },
       },
@@ -283,6 +298,9 @@ module.exports = {
           optimizer: {
             enabled: true,
             runs: 200,
+            details: {
+              yul: false
+            }
           },
         },
       },
