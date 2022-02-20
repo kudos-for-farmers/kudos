@@ -5,10 +5,41 @@
 module.exports = async ({ getNamedAccounts, deployments }) => {
   const { deploy } = deployments;
   const { deployer } = await getNamedAccounts();
+
   await deploy("GuildKudos", {
     // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
     from: deployer,
     //args: [ "Hello", ethers.utils.parseEther("1.5") ],
+    log: true,
+  });
+
+  await deploy("ERC20", {
+    from: deployer,
+    args: [ "DAOKudos", "dKUDO" ],
+    log: true,
+  });
+
+  const guildKudos = await ethers.getContract("GuildKudos", deployer);
+  const daoToken = await ethers.getContract("ERC20", deployer);
+
+  await deploy("KudosGuild", {
+    // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
+    from: deployer,
+    args: [ 
+      ethers.address(daoToken),
+      ethers.address(guildKudos),
+      600000,   // uint256 _proposalTime,
+      600000,   // uint256 _timeForExecution,
+      100,      // uint256 _votingPowerForProposalExecution,
+      100,      // uint256 _votingPowerForProposalCreation,
+      "Ellen's Cut Flowers",          // string memory _guildName,
+      "Kudos (Ellen's Cut Flowers)",  // string memory _kudosName,
+      "ecfKUDO",                      // string memory _kudosSymbol,
+      100000,   // uint256 _voteGas,
+      999999,   // uint256 _maxGasPrice,
+      100,      // uint256 _maxActiveProposals,
+      60000     // uint256 _lockTime,
+    ],
     log: true,
   });
 
@@ -48,4 +79,4 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   });
   */
 };
-module.exports.tags = ["GuildKudos"];
+module.exports.tags = ["KudosGuild"];
