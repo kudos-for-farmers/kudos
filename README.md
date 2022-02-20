@@ -1,6 +1,8 @@
-# kudos - farm ecosystem incentives and rewards
+# kudos 
+Incentives and Rewards for Farmers and our Food System
 
-[[/media/Frame_50.png|kudos]]
+
+[[media/Frame_50.png|kudos]]
 
 
 
