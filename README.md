@@ -1,16 +1,78 @@
-# farm kudos
-#### Upgrading our Food System through Rewards and Incentivization
+# kudos - upgrade our food system
+
+## Rewards and Incentivization for Farmers and Other Contributors
 
 <img src="media/Frame_50.png">
 
 
 
 
+## Harmony Deployment
+0xF36121C1a9935B522A35Ffdf99F9C224a7574A56
+Guild Proxy: 0x3d4F2D7562034599168796cd388B82194de2AB13
+Guild Implementation: 0x653F9F652e5320076aF00C6a17411a5E1BF01A82
 
 
-> everything you need to build on Ethereum! 🚀
 
-🧪 Quickly experiment with Solidity using a frontend that adapts to your smart contract:
+
+# Team
+
+<!-- Please don't remove this: Grab your social icons from https://github.com/carlsednaoui/gitsocial -->
+
+<!-- display the social media buttons in your README -->
+
+#### Daniel
+[![alt text][1.1]][DANIEL-twitter]
+[![alt text][6.1]][DANIEL-github]
+[![alt text][3.1]][3]
+[![alt text][4.1]][4]
+[![alt text][5.1]][5]
+[![alt text][6.1]][6]
+
+
+<!-- links to social media icons -->
+<!-- no need to change these -->
+
+<!-- icons with padding -->
+
+[1.1]: http://i.imgur.com/tXSoThF.png (twitter icon with padding)
+[2.1]: http://i.imgur.com/P3YfQoD.png (facebook icon with padding)
+[3.1]: http://i.imgur.com/yCsTjba.png (google plus icon with padding)
+[4.1]: http://i.imgur.com/YckIOms.png (tumblr icon with padding)
+[5.1]: http://i.imgur.com/1AGmwO3.png (dribbble icon with padding)
+[6.1]: http://i.imgur.com/0o48UoR.png (github icon with padding)
+
+<!-- icons without padding -->
+
+[1.2]: http://i.imgur.com/wWzX9uB.png (twitter icon without padding)
+[2.2]: http://i.imgur.com/fep1WsG.png (facebook icon without padding)
+[3.2]: http://i.imgur.com/VlgBKQ9.png (google plus icon without padding)
+[4.2]: http://i.imgur.com/jDRp47c.png (tumblr icon without padding)
+[5.2]: http://i.imgur.com/Vvy3Kru.png (dribbble icon without padding)
+[6.2]: http://i.imgur.com/9I6NRUm.png (github icon without padding)
+
+
+<!-- links to your social media accounts -->
+<!-- update these accordingly -->
+
+[DANIEL-twitter]: http://www.twitter.com/deploydan
+[DANIEL-github]: http://www.github.com/denvercitizen9
+
+<!-- Please don't remove this: Grab your social icons from https://github.com/carlsednaoui/gitsocial -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ![image](https://user-images.githubusercontent.com/2653167/124158108-c14ca380-da56-11eb-967e-69cde37ca8eb.png)
 
@@ -101,7 +163,8 @@ Check out all the [active branches](https://github.com/austintgriffith/scaffold-
  - ⚖️  [Learn how a simple DEX works](https://medium.com/@austin_48503/%EF%B8%8F-minimum-viable-exchange-d84f30bd0c90)
  - 🦍  [Ape into learning!](https://github.com/austintgriffith/scaffold-eth/tree/aave-ape)
 
-# 💬 Support Chat
+
+
 
 Join the telegram [support chat 💬](https://t.me/joinchat/KByvmRe5wkR-8F_zz6AjpA) to ask questions and find others building with 🏗 scaffold-eth!
 
