@@ -1,16 +1,21 @@
-pragma solidity >=0.8.4 <0.9.0;
 //SPDX-License-Identifier: MIT
+pragma solidity ^0.7.6;
+pragma experimental ABIEncoderV2;
 
 import "hardhat/console.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/security/PausableUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol";
+
+struct proxyTokenInitVars {
+    string name;
+    string symbol;
+    address impl;
+}
 
 contract GuildKudos is Initializable, ERC20Upgradeable, PausableUpgradeable, OwnableUpgradeable {
 
-    /// @custom:oz-upgrades-unsafe-allow constructor
-    // constructor() initializer {}
 
     function initialize(string memory name, string memory symbol) initializer public {
         __ERC20_init(name, symbol);

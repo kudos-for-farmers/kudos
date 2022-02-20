@@ -25,7 +25,7 @@ const { isAddress, getAddress, formatUnits, parseUnits } = utils;
 //
 // Select the network you want to deploy to here:
 //
-const defaultNetwork = "localhost";
+const defaultNetwork = "testnetHarmony";
 
 const mainnetGwei = 21;
 
@@ -281,7 +281,7 @@ module.exports = {
         },
       },
       {
-        version: "0.8.8",
+        version: "0.7.6",
         settings: {
           optimizer: {
             enabled: true,
@@ -293,14 +293,11 @@ module.exports = {
         },
       },
       {
-        version: "0.6.7",
+        version: "0.5.4",
         settings: {
           optimizer: {
             enabled: true,
             runs: 200,
-            details: {
-              yul: false
-            }
           },
         },
       },
