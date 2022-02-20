@@ -10,7 +10,7 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 contract GuildKudos is Initializable, ERC20Upgradeable, PausableUpgradeable, OwnableUpgradeable {
 
     /// @custom:oz-upgrades-unsafe-allow constructor
-    constructor() initializer {}
+    // constructor() initializer {}
 
     function initialize(string memory name, string memory symbol) initializer public {
         __ERC20_init(name, symbol);
@@ -28,14 +28,6 @@ contract GuildKudos is Initializable, ERC20Upgradeable, PausableUpgradeable, Own
 
     function mint(address to, uint256 amount) public onlyOwner {
         _mint(to, amount);
-    }
-
-    function _beforeTokenTransfer(address from, address to, uint256 amount)
-        internal
-        whenNotPaused
-        override
-    {
-        super._beforeTokenTransfer(from, to, amount);
     }
 
     // Kudos are non-transferable
