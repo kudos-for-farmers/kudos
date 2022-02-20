@@ -1,10 +1,15 @@
 // deploy/00_deploy_your_contract.js
 
+const { ethers } = require("hardhat");
+
 //const { ethers } = require("hardhat");
 
 module.exports = async ({ getNamedAccounts, deployments }) => {
   const { deploy } = deployments;
   const { deployer } = await getNamedAccounts();
+  const kudosGuildAbi = [
+
+  ]
 
   await deploy("GuildKudos", {
     // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
@@ -13,35 +18,52 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     log: true,
   });
 
-  await deploy("ERC20", {
+  await deploy("DAOToken", {
     from: deployer,
-    args: [ "DAOKudos", "dKUDO" ],
+    args: [ "DAOKudos", "dKUDO", 0 ],
     log: true,
   });
 
   const guildKudos = await ethers.getContract("GuildKudos", deployer);
-  const daoToken = await ethers.getContract("ERC20", deployer);
+  const daoToken = await ethers.getContract("DAOToken", deployer);
 
   await deploy("KudosGuild", {
     // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
     from: deployer,
-    args: [ 
-      ethers.address(daoToken),
-      ethers.address(guildKudos),
+    // args: [ 
+    //   daoToken.address,
+    //   600000,   // uint256 _proposalTime,
+    //   600000,   // uint256 _timeForExecution,
+    //   100,      // uint256 _votingPowerForProposalExecution,
+    //   100,      // uint256 _votingPowerForProposalCreation,
+    //   "Ellen's Cut Flowers",          // string memory _guildName,
+    //   100000,   // uint256 _voteGas,
+    //   999999,   // uint256 _maxGasPrice,
+    //   100,      // uint256 _maxActiveProposals,
+    //   60000,    // uint256 _lockTime,
+    //   ["Kudos (Ellen's Cut Flowers)", // string memory _kudosName,
+    //   "ecfKUDO",                      // string memory _kudosSymbol,
+    //   guildKudos.address]
+    // ],
+    log: true,
+  });
+
+  const guild1 = await ethers.getContract("KudosGuild", deployer)
+  guild1.functions.initialize(
+      daoToken.address,
       600000,   // uint256 _proposalTime,
       600000,   // uint256 _timeForExecution,
       100,      // uint256 _votingPowerForProposalExecution,
       100,      // uint256 _votingPowerForProposalCreation,
       "Ellen's Cut Flowers",          // string memory _guildName,
-      "Kudos (Ellen's Cut Flowers)",  // string memory _kudosName,
-      "ecfKUDO",                      // string memory _kudosSymbol,
       100000,   // uint256 _voteGas,
       999999,   // uint256 _maxGasPrice,
       100,      // uint256 _maxActiveProposals,
-      60000     // uint256 _lockTime,
-    ],
-    log: true,
-  });
+      60000,    // uint256 _lockTime,
+      ["Kudos (Ellen's Cut Flowers)", // string memory _kudosName,
+      "ecfKUDO",                      // string memory _kudosSymbol,
+      guildKudos.address]
+  )
 
   /*
     // Getting a previously deployed contract
