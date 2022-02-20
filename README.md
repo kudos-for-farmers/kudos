@@ -1,8 +1,8 @@
 # kudos 
 Incentives and Rewards for Farmers and our Food System
 
+<img src="media/Frame_50.png">
 
-[[media/Frame_50.png|kudos]]
 
 
 
