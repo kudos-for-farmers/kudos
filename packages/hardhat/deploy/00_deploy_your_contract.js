@@ -48,8 +48,13 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     log: true,
   });
 
-  const guild1 = await ethers.getContract("KudosGuild", deployer)
-  guild1.functions.initialize(
+  const guild1 = await ethers.getContract("KudosGuild", deployer);
+
+  console.log(guild1);
+
+
+  // see docs in ERC20Guild.sol for docs
+  guild1.functions['initialize(address,uint256,uint256,uint256,uint256,string,uint256,uint256,uint256,uint256,(string,string,address))'](
       daoToken.address,
       600000,   // uint256 _proposalTime,
       600000,   // uint256 _timeForExecution,
@@ -58,8 +63,9 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
       "Ellen's Cut Flowers",          // string memory _guildName,
       100000,   // uint256 _voteGas,
       999999,   // uint256 _maxGasPrice,
-      100,      // uint256 _maxActiveProposals,
       60000,    // uint256 _lockTime,
+      600,      // uint256 _permissionDelay, 
+      //proxyTokenInitVars memory kudoVars:
       ["Kudos (Ellen's Cut Flowers)", // string memory _kudosName,
       "ecfKUDO",                      // string memory _kudosSymbol,
       guildKudos.address]

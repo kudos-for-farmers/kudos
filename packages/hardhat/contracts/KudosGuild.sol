@@ -11,6 +11,8 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 contract KudosGuild is ERC20Guild, OwnableUpgradeable {
     // GuildKudos public kudos;
 
+
+
     function initialize(
         address _daoToken,
         uint256 _proposalTime,
@@ -20,13 +22,14 @@ contract KudosGuild is ERC20Guild, OwnableUpgradeable {
         string memory _guildName,
         uint256 _voteGas,
         uint256 _maxGasPrice,
-        uint256 _maxActiveProposals,
         uint256 _lockTime,
+        uint256 _permissionDelay,
         proxyTokenInitVars memory kudoVars
     ) public virtual initializer {
         // address clone = Clones.clone(_kudosImpl);
         // kudos = GuildKudos(clone);
         // kudos.initialize(_kudosName, _kudosSymbol);
+
 
         super.initialize(
             _daoToken,
@@ -37,8 +40,8 @@ contract KudosGuild is ERC20Guild, OwnableUpgradeable {
             _guildName,
             _voteGas,
             _maxGasPrice,
-            _maxActiveProposals,
-            _lockTime
+            _lockTime,
+	    _permissionDelay
         );
     }
 
