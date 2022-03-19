@@ -8,7 +8,7 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 contract KudosGuild is ERC20Guild, OwnableUpgradeable {
 
-function initialize(
+    function initialize(
         address _daoToken,
         uint256 _proposalTime,
         uint256 _timeForExecution,
@@ -30,7 +30,7 @@ function initialize(
             _voteGas,
             _maxGasPrice,
             _lockTime,
-	    _permissionDelay
+	        _permissionDelay
         );
     }
 }
