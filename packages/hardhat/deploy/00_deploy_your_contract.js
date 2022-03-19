@@ -8,33 +8,26 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   const { deploy } = deployments;
   const { deployer } = await getNamedAccounts();
 
-  // await deploy("AllotmentToken", {
-  //   from: deployer,
-  //   args: [ "DAOKudos", "dKUDO", 0 ],
-  //   log: true,
-  // });
-  // const daoToken = await ethers.getContract("DaoToken", deployer);
+  await deploy("AllocationToken", {
+    from: deployer,
+    log: true,
+  });
+  const allocationToken = await ethers.getContract("AllocationToken", deployer);
+  allocationToken.functions.initialize("foodDAO Allocation", "fDAO");
 
-  // await deploy("KudosGuild", {
-  //   from: deployer,
-  //   log: true,
-  // });
-  // const kudosGuild = await ethers.getContract("KudosGuild", deployer);
-
-  // await deploy("KudosToken", {
-  //   from: deployer,
-  //   args: [ "Kudos", "KUDO", 0, daoToken.address],
-  //   log: true,
-  // });
-  // const kudosToken = await ethers.getContract("KudosToken");
-  //
+  await deploy("KudosToken", {
+    from: deployer,
+    log: true,
+  });
+  const kudosToken = await ethers.getContract("KudosToken", deployer);
+  kudosToken.functions.initialize("Kudos", "KUDO", allocationToken.address);
 
   await deploy("GuildVotingToken", {
     from: deployer,
-    args: ["SLV-co-op", "SLV"],
     log: true,
   });
   const votingToken = await ethers.getContract("GuildVotingToken");
+  votingToken.functions.initialize("SLV-co-op", "SLV");
 
   await deploy("KudosGuild", {
     from: deployer,
