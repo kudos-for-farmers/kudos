@@ -8,4 +8,5 @@
 	branch = regenesis/0.4.0
 [submodule "packages/hardhat/contracts/dxdao-contracts"]
 	path = packages/hardhat/contracts/dxdao-contracts
-	url = git@github.com:DXgovernance/dxdao-contracts.git
+	url = https://github.com/DXgovernance/dxdao-contracts
+	branch = main
