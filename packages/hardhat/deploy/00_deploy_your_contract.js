@@ -49,6 +49,9 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
       600,      // uint256 _permissionDelay, 
   );
 
+  await votingToken.transferOwnership(kudosGuild.address);
+  console.log("GuildVotingToken owner = " + await votingToken.functions.owner());
+
   // deploy "guild" for each co-op or org that can dole out kudos
   // kudo recipients are individual "addresses" (behind an email)
   // have another "super-guild" that can deploy new guilds??
