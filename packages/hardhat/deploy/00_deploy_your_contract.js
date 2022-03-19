@@ -8,44 +8,53 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   const { deploy } = deployments;
   const { deployer } = await getNamedAccounts();
 
-  await deploy("DaoToken", {
+  // await deploy("AllotmentToken", {
+  //   from: deployer,
+  //   args: [ "DAOKudos", "dKUDO", 0 ],
+  //   log: true,
+  // });
+  // const daoToken = await ethers.getContract("DaoToken", deployer);
+
+  // await deploy("KudosGuild", {
+  //   from: deployer,
+  //   log: true,
+  // });
+  // const kudosGuild = await ethers.getContract("KudosGuild", deployer);
+
+  // await deploy("KudosToken", {
+  //   from: deployer,
+  //   args: [ "Kudos", "KUDO", 0, daoToken.address],
+  //   log: true,
+  // });
+  // const kudosToken = await ethers.getContract("KudosToken");
+  //
+
+  await deploy("GuildVotingToken", {
     from: deployer,
-    args: [ "DAOKudos", "dKUDO", 0 ],
+    args: ["SLV-co-op", "SLV"],
     log: true,
   });
-  const daoToken = await ethers.getContract("DaoToken", deployer);
+  const votingToken = await ethers.getContract("GuildVotingToken");
 
   await deploy("KudosGuild", {
     from: deployer,
     log: true,
   });
-  const kudosGuild = await ethers.getContract("KudosGuild", deployer);
-
-  await deploy("KudosToken", {
-    from: deployer,
-    args: [ "Kudos", "KUDO", 0, daoToken.address],
-    log: true,
-  });
-  const kudosToken = await ethers.getContract("KudosToken");
-
+  const kudosGuild = await ethers.getContract("KudosGuild");
 
   // see docs in ERC20Guild.sol for docs
-  kudosGuild.functions['initialize(address,uint256,uint256,uint256,uint256,string,uint256,uint256,uint256,uint256,(string,string,address))'](
-      daoToken.address,
+  kudosGuild.functions.initialize(
+      votingToken.address,
       600000,   // uint256 _proposalTime,
       600000,   // uint256 _timeForExecution,
       100,      // uint256 _votingPowerForProposalExecution,
       100,      // uint256 _votingPowerForProposalCreation,
-      "Ellen's Cut Flowers",          // string memory _guildName,
+      "San-Louise-Valley CoOp",          // string memory _guildName,
       100000,   // uint256 _voteGas,
       999999,   // uint256 _maxGasPrice,
       60000,    // uint256 _lockTime,
       600,      // uint256 _permissionDelay, 
-      //proxyTokenInitVars memory kudoVars:
-      ["Kudos (Ellen's Cut Flowers)", // string memory _kudosName,
-      "ecfKUDO",                      // string memory _kudosSymbol,
-      guildKudos.address]
-  )
+  );
 
   // deploy "guild" for each co-op or org that can dole out kudos
   // kudo recipients are individual "addresses" (behind an email)
