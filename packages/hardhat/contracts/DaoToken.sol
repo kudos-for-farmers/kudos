@@ -8,14 +8,7 @@ import "@openzeppelin/contracts-upgradeable/utils/PausableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/Initializable.sol";
 
-struct proxyTokenInitVars {
-    string name;
-    string symbol;
-    address impl;
-}
-
-contract GuildKudos is Initializable, ERC20Upgradeable, PausableUpgradeable, OwnableUpgradeable {
-
+contract KudosToken is Initializable, ERC20Upgradeable, PausableUpgradeable, OwnableUpgradeable {
 
     function initialize(string memory name, string memory symbol) initializer public {
         __ERC20_init(name, symbol);

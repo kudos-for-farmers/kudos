@@ -7,54 +7,30 @@ const { ethers } = require("hardhat");
 module.exports = async ({ getNamedAccounts, deployments }) => {
   const { deploy } = deployments;
   const { deployer } = await getNamedAccounts();
-  const kudosGuildAbi = [
 
-  ]
-
-  await deploy("GuildKudos", {
-    // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
-    from: deployer,
-    //args: [ "Hello", ethers.utils.parseEther("1.5") ],
-    log: true,
-  });
-
-  await deploy("DAOToken", {
+  await deploy("DaoToken", {
     from: deployer,
     args: [ "DAOKudos", "dKUDO", 0 ],
     log: true,
   });
-
-  const guildKudos = await ethers.getContract("GuildKudos", deployer);
-  const daoToken = await ethers.getContract("DAOToken", deployer);
+  const daoToken = await ethers.getContract("DaoToken", deployer);
 
   await deploy("KudosGuild", {
-    // Learn more about args here: https://www.npmjs.com/package/hardhat-deploy#deploymentsdeploy
     from: deployer,
-    // args: [ 
-    //   daoToken.address,
-    //   600000,   // uint256 _proposalTime,
-    //   600000,   // uint256 _timeForExecution,
-    //   100,      // uint256 _votingPowerForProposalExecution,
-    //   100,      // uint256 _votingPowerForProposalCreation,
-    //   "Ellen's Cut Flowers",          // string memory _guildName,
-    //   100000,   // uint256 _voteGas,
-    //   999999,   // uint256 _maxGasPrice,
-    //   100,      // uint256 _maxActiveProposals,
-    //   60000,    // uint256 _lockTime,
-    //   ["Kudos (Ellen's Cut Flowers)", // string memory _kudosName,
-    //   "ecfKUDO",                      // string memory _kudosSymbol,
-    //   guildKudos.address]
-    // ],
     log: true,
   });
+  const kudosGuild = await ethers.getContract("KudosGuild", deployer);
 
-  const guild1 = await ethers.getContract("KudosGuild", deployer);
-
-  console.log(guild1);
+  await deploy("KudosToken", {
+    from: deployer,
+    args: [ "Kudos", "KUDO", 0, daoToken.address],
+    log: true,
+  });
+  const kudosToken = await ethers.getContract("KudosToken");
 
 
   // see docs in ERC20Guild.sol for docs
-  guild1.functions['initialize(address,uint256,uint256,uint256,uint256,string,uint256,uint256,uint256,uint256,(string,string,address))'](
+  kudosGuild.functions['initialize(address,uint256,uint256,uint256,uint256,string,uint256,uint256,uint256,uint256,(string,string,address))'](
       daoToken.address,
       600000,   // uint256 _proposalTime,
       600000,   // uint256 _timeForExecution,
@@ -70,6 +46,14 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
       "ecfKUDO",                      // string memory _kudosSymbol,
       guildKudos.address]
   )
+
+  // deploy "guild" for each co-op or org that can dole out kudos
+  // kudo recipients are individual "addresses" (behind an email)
+  // have another "super-guild" that can deploy new guilds??
+
+
+
+
 
   /*
     // Getting a previously deployed contract

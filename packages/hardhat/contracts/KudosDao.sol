@@ -4,17 +4,15 @@ pragma experimental ABIEncoderV2;
 
 import "hardhat/console.sol";
 import "../contracts/dxdao-contracts/contracts/erc20guild/ERC20Guild.sol";
-import "../contracts/GuildKudos.sol";
-import "@openzeppelin/contracts/proxy/Clones.sol";
+import "../contracts/DaoToken.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 contract KudosGuild is ERC20Guild, OwnableUpgradeable {
-    // GuildKudos public kudos;
+    DaoToken public daoToken;
 
 
-
-    function initialize(
-        address _daoToken,
+function initialize(
+        DaoToken _daoToken,
         uint256 _proposalTime,
         uint256 _timeForExecution,
         uint256 _votingPowerForProposalExecution,
@@ -32,7 +30,7 @@ contract KudosGuild is ERC20Guild, OwnableUpgradeable {
 
 
         super.initialize(
-            _daoToken,
+            address(_daoToken),
             _proposalTime,
             _timeForExecution,
             _votingPowerForProposalExecution,
@@ -43,15 +41,23 @@ contract KudosGuild is ERC20Guild, OwnableUpgradeable {
             _lockTime,
 	    _permissionDelay
         );
+
+	super.setAllowance(
+	  to,
+	  functionSig,
+	  allowance,
+	)
     }
 
-    function mintKudos(address to, uint256 amount) public onlyOwner {
-        // if (token.balanceOf(address(this)) >= token.totalSupply() + amount) {
-        //     token.mint(to, amount);
-        // } else {
-        //     // Create a new DXdao Guild Proposal in order to mint a greater number
-        //     // of GuildKudos than the Guild's balance of daoToken, which must pass
-        //     // a vote by holders of the daoToken (or maybe the GuildKudos?)
-        // }
+    function proposeReward(address to, uint256 amount, string description) public {
+      //TODO submit a proposal to the ERC20 guild to call the mint function of the DAOToken...
+      super.createProposal(
+         to,
+	 data,
+	 value,
+	 description,
+	 contentHash,
+      )
     }
+
 }
