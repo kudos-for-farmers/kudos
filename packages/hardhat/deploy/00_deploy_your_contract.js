@@ -13,21 +13,30 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     log: true,
   });
   const allocationToken = await ethers.getContract("AllocationToken", deployer);
-  allocationToken.functions.initialize("foodDAO Allocation", "fDAO");
-
-  await deploy("KudosToken", {
-    from: deployer,
-    log: true,
-  });
-  const kudosToken = await ethers.getContract("KudosToken", deployer);
-  kudosToken.functions.initialize("Kudos", "KUDO", allocationToken.address);
+  try {
+    await allocationToken.functions.initialize("foodDAO Allocation", "fDAO");
+  } catch (e) {
+  }
 
   await deploy("GuildVotingToken", {
     from: deployer,
     log: true,
   });
   const votingToken = await ethers.getContract("GuildVotingToken");
-  votingToken.functions.initialize("SLV-co-op", "SLV");
+  try {
+    await votingToken.functions.initialize("SLV-co-op", "SLV");
+  } catch (e) {
+  }
+
+  await deploy("KudosToken", {
+    from: deployer,
+    log: true,
+  });
+  const kudosToken = await ethers.getContract("KudosToken", deployer);
+  try {
+    await kudosToken.functions.initialize("Kudos", "KUDO", allocationToken.address);
+  } catch (e) {
+  }
 
   await deploy("KudosGuild", {
     from: deployer,
@@ -35,22 +44,29 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   });
   const kudosGuild = await ethers.getContract("KudosGuild");
 
-  // see docs in ERC20Guild.sol for docs
-  kudosGuild.functions.initialize(
+  try{
+    // // see docs in ERC20Guild.sol for docs
+    await kudosGuild.functions.initialize2(
       votingToken.address,
-      600000,   // uint256 _proposalTime,
+      120,   // uint256 _proposalTime,
       600000,   // uint256 _timeForExecution,
-      100,      // uint256 _votingPowerForProposalExecution,
-      100,      // uint256 _votingPowerForProposalCreation,
+      1,      // uint256 _votingPowerForProposalExecution,
+      1,      // unt256 _votingPowerForProposalCreation,
       "San-Louise-Valley CoOp",          // string memory _guildName,
       100000,   // uint256 _voteGas,
       999999,   // uint256 _maxGasPrice,
       60000,    // uint256 _lockTime,
-      600,      // uint256 _permissionDelay, 
-  );
+      600,      // uint256 _permissionDelay,
+      kudosToken.address,
+    );
+  } catch (e) {
+  }
 
-  await votingToken.transferOwnership(kudosGuild.address);
-  console.log("GuildVotingToken owner = " + await votingToken.functions.owner());
+  //TODO need to check if we are the owner first, since hardhat will reuse our contracts.
+  // also, being the owner is a convinient way to mint tokens in dev... someone needs to be
+  // able to vote in the dao.
+  //await votingToken.transferOwnership(kudosGuild.address);
+  //console.log("GuildVotingToken owner = " + await votingToken.functions.owner());
 
   // deploy "guild" for each co-op or org that can dole out kudos
   // kudo recipients are individual "addresses" (behind an email)
@@ -64,9 +80,9 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     // Getting a previously deployed contract
     const YourContract = await ethers.getContract("YourContract", deployer);
     await YourContract.setPurpose("Hello");
-  
-    To take ownership of yourContract using the ownable library uncomment next line and add the 
-    address you want to be the owner. 
+
+    To take ownership of yourContract using the ownable library uncomment next line and add the
+    address you want to be the owner.
     // yourContract.transferOwnership(YOUR_ADDRESS_HERE);
 
     //const yourContract = await ethers.getContractAt('YourContract', "0xaAC799eC2d00C013f1F11c37E654e59B0429DF6A") //<-- if you want to instantiate a version of a contract at a specific address!

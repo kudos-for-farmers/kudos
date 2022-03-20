@@ -8,7 +8,8 @@ import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
 contract KudosGuild is ERC20Guild, OwnableUpgradeable {
 
-    function initialize(
+
+    function initialize2(
         address _daoToken,
         uint256 _proposalTime,
         uint256 _timeForExecution,
@@ -18,8 +19,9 @@ contract KudosGuild is ERC20Guild, OwnableUpgradeable {
         uint256 _voteGas,
         uint256 _maxGasPrice,
         uint256 _lockTime,
-        uint256 _permissionDelay
-    ) public virtual override initializer {
+        uint256 _permissionDelay,
+        address kudosAddress
+    ) public virtual initializer {
         super.initialize(
             _daoToken,
             _proposalTime,
@@ -32,5 +34,10 @@ contract KudosGuild is ERC20Guild, OwnableUpgradeable {
             _lockTime,
 	        _permissionDelay
         );
+
+
+        callPermissions[kudosAddress]
+            [bytes4(keccak256("mint(address,uint256)"))]
+            =block.timestamp;
     }
 }
