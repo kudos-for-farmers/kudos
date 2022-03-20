@@ -13,6 +13,9 @@ contract KudosGuildStorage {
 
 contract KudosGuild is ERC20Guild, KudosGuildStorage, OwnableUpgradeable {
 
+    // keccack256("KUDOS_GUILD")
+    bytes32 internal constant KUDOS = 0x11d4d7526fd0ec69e71d5a4da1fac6d625eb1fc6600ca6c5fb664e6bcc5b4595;
+
     function initialize2(
         address _guildToken,
         uint256 _proposalTime,
@@ -45,5 +48,9 @@ contract KudosGuild is ERC20Guild, KudosGuildStorage, OwnableUpgradeable {
         callPermissions[_kudosToken]
             [bytes4(keccak256("mint(address,uint256)"))]
             =block.timestamp;
+    }
+
+    function checkKudosGuild() public pure returns (bytes32) {
+        return KUDOS;
     }
 }
