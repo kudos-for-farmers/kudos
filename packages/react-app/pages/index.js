@@ -1,9 +1,12 @@
 import React, { useContext, useState } from "react";
-import { Contract, Account, Header } from "../components";
+import { Contract, Account, Header, Footer } from "../components";
 import { Web3Consumer } from "../helpers/Web3Context";
 import { useContractLoader } from "eth-hooks";
+import Link from "next/link";
+import { useRouter } from "next/router";
 
-
+import {Typography, Divider, Card, Form, Input, InputNumber, Button} from 'antd';
+const {Title, Text } = Typography;
 
 // async function submitProposal(web3, contract, functionName, values) {
 //   let callData=encodeFunction(contract, functionName, values);
@@ -57,13 +60,8 @@ function useLockVotingTokens(web3) {
   }
 }
 
-function useProposeKudoDistribution(web3, proposal, setProposal) {
-  let contracts = useContractLoader(web3.localProvider, web3.contractConfig);
+async function proposeKudoDistribution(web3, contracts, recipient, amount, description) {
   let signer = web3.userSigner;
-
-  return async () => {
-    let {recipient, amount, description} = proposal;
-    console.log(proposal, recipient);
     let guildContract=contracts["KudosGuild"].connect(signer);
     let kudosContract=contracts["KudosToken"];
 
@@ -76,11 +74,8 @@ function useProposeKudoDistribution(web3, proposal, setProposal) {
     let event = receipt.events.find(event=>event.event==='ProposalCreated');
     const [id] = event.args;
     console.log(tx, event.args);
-    setProposal( (proposal) => {
-      return {...proposal, id: id}
-    });
     console.log(`submit new proposal ${id} to distribute ${amount} kudos to ${recipient}: ${description}`);
-  }
+    return id
 }
 
 function useVoteOnProposal(web3, proposal) {
@@ -127,97 +122,82 @@ function Home({ web3 }) {
   let contracts = useContractLoader(web3.localProvider, web3.contractConfig);
   console.log('contracts:', contracts);
 
-  let [proposal, setProposal]=useProposalForm();
-  let lockTokens=useLockVotingTokens(web3);
-  let proposeKudoDistribution=useProposeKudoDistribution(web3, proposal, setProposal);
-  let voteOnProposal=useVoteOnProposal(web3, proposal);
-  let endProposal=useEndProposal(web3, proposal);
+  // let lockTokens=useLockVotingTokens(web3);
+  // let proposeKudoDistribution=useProposeKudoDistribution(web3, proposal, setProposal);
+  // let voteOnProposal=useVoteOnProposal(web3, proposal);
+  // let endProposal=useEndProposal(web3, proposal);
 
-  // default hardcode yourself as a recipient with 10 tokens. this would be populated by the form... and validated...
-  if (!proposal.recipient && web3.userSigner) {
-    setProposal((proposal)=>{
-      return {...proposal, recipient: web3.userSigner.address, amount: 10}
-    });
+  let [proposalId, setProposalId] = useState("");
+  let router = useRouter();
+  let onFormSubmit = async (values) => {
+    const userMap= {
+      "bob@gmail.com": web3.userSigner.address,
+    };
+    let recipient = userMap[values.address];
+    let description = values.description;
+    let amount = parseInt(values.amount);
+    console.log(web3, contracts, recipient, amount, description);
+    let id = await proposeKudoDistribution(web3, contracts, recipient, amount, description)
+    router.push({
+      pathname: '/proposals',
+      query: {pid: id}
+    })
   }
 
-  console.log(`info:`, web3.localProvider, web3.selectedChainId, proposal);
+  //console.log(`info:`, web3.localProvider, web3.selectedChainId, proposal);
 
   return (
     <>
-      {/* Page Header start */}
+
       <div className="flex flex-1 justify-between items-center">
         <Header />
         <div className="mr-6">
-          <Account {...web3} />
+          <span>hellloooo</span>
         </div>
       </div>
-      {/* Page Header end */}
 
       {/* Main Page Content start */}
-
       <div className="flex flex-1 flex-col h-screen w-full items-center">
-        <div className="text-center" style={{ margin: 64 }}>
-          <span>This App is powered by Scaffold-eth & Next.js!</span>
-          <br />
-          <span>
-            Added{" "}
-            <a href="https://tailwindcomponents.com/cheatsheet/" target="_blank" rel="noreferrer">
-              TailwindCSS
-            </a>{" "}
-            for easier styling.
-          </span>
-        </div>
-        <div className="text-center">
-          <div onClick={lockTokens}>
-            Lock All Voting Tokens
-          </div>
-          <br/>
-          <div onClick={proposeKudoDistribution}>
-            Propose Kudo Distribution
-          </div>
-          <br/>
-          <div onClick={voteOnProposal}>
-            Vote For Proposal
-          </div>
-          <br/>
-          <div onClick={endProposal}>
-            End
-          </div>
+        <Title>Propose a Kudo reward</Title>
+        <Card>
+          <Form requiredMark='optional' onFinish={onFormSubmit}>
+            <Form.Item
+              label="Recipient email address"
+              name="address"
+              rules={[
+                {required: true, message: "The recipient's email address is required"},
+                {type: "email", message: "The recipient's email address does not look like a valid email address"},
+              ]}
+            >
+              <Input/>
+            </Form.Item>
+            <Form.Item
+              label="The amount of Kudos to award"
+              name="amount"
+              rules={[
+                {required: true, message: "The amount of kudos is required"},
+                {type: "integer", message: "the amount of kudos must be a whole number"},
+              ]}
+            >
+              <InputNumber min={0} max={100}/>
+            </Form.Item>
 
-          <Contract
-            name="GuildVotingToken"
-            signer={web3.userSigner}
-            provider={web3.localProvider}
-            address={web3.address}
-            blockExplorer={web3.blockExplorer}
-            contractConfig={web3.contractConfig}
-          />
-          <Contract
-            name="KudosGuild"
-            signer={web3.userSigner}
-            provider={web3.localProvider}
-            address={web3.address}
-            blockExplorer={web3.blockExplorer}
-            contractConfig={web3.contractConfig}
-          />
-          <Contract
-            name="KudosToken"
-            signer={web3.userSigner}
-            provider={web3.localProvider}
-            address={web3.address}
-            blockExplorer={web3.blockExplorer}
-            contractConfig={web3.contractConfig}
-          />
-          <Contract
-            name="AllocationToken"
-            signer={web3.userSigner}
-            provider={web3.localProvider}
-            address={web3.address}
-            blockExplorer={web3.blockExplorer}
-            contractConfig={web3.contractConfig}
-          />
-        </div>
+            <Form.Item
+              label="What are the Kudos for"
+              name="description"
+              rules={[
+                {required: true, message: "The proposal description is required"}
+              ]}
+            >
+              <Input/>
+            </Form.Item>
+            <Form.Item>
+              <Button type="primary" htmlType="submit" style={ {margin: "0 auto"} }>Submit Proposal</Button>
+            </Form.Item>
+          </Form>
+        </Card>
       </div>
+      <Footer/>
     </>
   );
 }
