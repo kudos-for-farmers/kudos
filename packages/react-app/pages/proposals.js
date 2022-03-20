@@ -60,11 +60,15 @@ async function getAllProposals(web3, contracts) {
   const numberOfProposals = await guildContract.getProposalsIdsLength();
   console.log(`there are ${numberOfProposals} proposals`);
   const proposals=Array(numberOfProposals);
-  for (let i=0; i<numberOfProposals; i++) {
-    const id=await guildContract.proposalsIds(i);
-    proposals[i]=await getProposal(web3, contracts, id);
+  if (numberOfProposals==0) {
+    return  []
+  } else {
+    for (let i=0; i<numberOfProposals; i++) {
+      const id=await guildContract.proposalsIds(i);
+      proposals[i]=await getProposal(web3, contracts, id);
+    }
+    return proposals;
   }
-  return proposals;
 }
 
 async function getProposal(web3, contracts, id) {
@@ -96,7 +100,7 @@ function Proposal({id, votes, description, endTime}, voteOnProposal) {
   return (
     <Card>
       <Title>reason: {description}</Title>
-      <p>{votes.toString()} will recieve {0} kudos</p>
+      <p>{"someone"} will recieve {"some amount of"} kudos</p>
       <p>three were {votes.toString()} votes for this proposal</p>
       <p>it will end at {endTime.toString()} time</p>
       <p>it is currently {new Date().getTime()/1000} time</p>
@@ -112,9 +116,10 @@ function Home({ web3 }) {
 
   let router = useRouter();
   let proposalId = router.query.pid;
-  let [proposals, setProposals] = useState([]);
+  let [proposals, setProposals] = useState();
 
-  if(contracts["KudosGuild"] && proposals.length === 0) {
+  console.log("proposals", proposals)
+  if(contracts["KudosGuild"] && !proposals) {
     if(proposalId){
       getProposal(web3, contracts, proposalId)
         .then(proposal=>setProposals((state)=>{return [proposal]}))
@@ -124,6 +129,7 @@ function Home({ web3 }) {
         .then(allProposals=>setProposals((state)=>{return allProposals}))
     }
   }
+  proposals=proposals || [];
 
   let voteOnProposal=function(id){
     return async ()=>{
@@ -134,6 +140,11 @@ function Home({ web3 }) {
       console.log(guildContract, guildContract.setVote, id, amount);
       await guildContract.setVote(id, amount);
       console.log(`voted on proposal ${id} with ${amount} voting power`);
+      setProposals((state)=>{return null})
+      router.replace({
+        pathname: '/proposals',
+        query: {pid: id}
+      })
     }
   }
 
