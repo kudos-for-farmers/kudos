@@ -6,29 +6,32 @@ import "hardhat/console.sol";
 import "../contracts/dxdao-contracts/contracts/erc20guild/ERC20Guild.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
-contract KudosGuild is ERC20Guild, OwnableUpgradeable {
-
+contract KudosGuildStorage {
     address public kudosToken;
+    address public volunteerBoard;
+}
+
+contract KudosGuild is ERC20Guild, KudosGuildStorage, OwnableUpgradeable {
 
     function initialize2(
         address _guildToken,
         uint256 _proposalTime,
         uint256 _timeForExecution,
-        uint256 _votingPowerForProposalExecution,
-        uint256 _votingPowerForProposalCreation,
+        uint256 _votingPower,
         string memory _guildName,
         uint256 _voteGas,
         uint256 _maxGasPrice,
         uint256 _lockTime,
         uint256 _permissionDelay,
-        address _kudosToken
+        address _kudosToken,
+        address _volunteerBoard
     ) public virtual initializer {
         super.initialize(
             _guildToken,
             _proposalTime,
             _timeForExecution,
-            _votingPowerForProposalExecution,
-            _votingPowerForProposalCreation,
+            _votingPower,
+            _votingPower,
             _guildName,
             _voteGas,
             _maxGasPrice,
@@ -37,6 +40,7 @@ contract KudosGuild is ERC20Guild, OwnableUpgradeable {
         );
 
         kudosToken = _kudosToken;
+        volunteerBoard = _volunteerBoard;
 
         callPermissions[_kudosToken]
             [bytes4(keccak256("mint(address,uint256)"))]

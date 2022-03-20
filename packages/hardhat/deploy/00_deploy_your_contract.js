@@ -38,6 +38,16 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
   } catch (e) {
   }
 
+  await deploy("KudosVolunteerBoard", {
+    from: deployer,
+    log: true,
+  });
+  const volunteerBoard = await ethers.getContract("KudosVolunteerBoard", deployer);
+  try {
+    await volunteerBoard.functions.initialize(allocationToken.address, kudosToken.address);
+  } catch (e) {
+  }
+
   await deploy("KudosGuild", {
     from: deployer,
     log: true,
@@ -50,14 +60,16 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
       votingToken.address,
       120,   // uint256 _proposalTime,
       600000,   // uint256 _timeForExecution,
-      1,      // uint256 _votingPowerForProposalExecution,
-      1,      // unt256 _votingPowerForProposalCreation,
+      1,      // uint256 _votingPower,
+      // 1,      // uint256 _votingPowerForProposalExecution,
+      // 1,      // unt256 _votingPowerForProposalCreation,
       "San-Louise-Valley CoOp",          // string memory _guildName,
       100000,   // uint256 _voteGas,
       999999,   // uint256 _maxGasPrice,
       60000,    // uint256 _lockTime,
       600,      // uint256 _permissionDelay,
       kudosToken.address,
+      volunteerBoard.address
     );
   } catch (e) {
   }
