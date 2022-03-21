@@ -19,10 +19,10 @@ We will use the guild model to identify any group involved in Colorado agricultu
 Digging deeper into the tech, both guilds and dao's will be managed using the DX DAO guild and daostack models.  A future state may allow members to govern locally as well as at the regional or even global level.  This framework also allows for automated verification of proposals requiring kudos distributions.
 
 
-## Harmony Deployment Info (Testnet)
-Initial Contract: 0xF36121C1a9935B522A35Ffdf99F9C224a7574A56
-Guild Proxy: 0x3d4F2D7562034599168796cd388B82194de2AB13
-Guild Implementation: 0x653F9F652e5320076aF00C6a17411a5E1BF01A82
+## Harmony Deployment Info (Testnet)  
+Initial Contract: 0xF36121C1a9935B522A35Ffdf99F9C224a7574A56  
+Guild Proxy: 0x3d4F2D7562034599168796cd388B82194de2AB13  
+Guild Implementation: 0x653F9F652e5320076aF00C6a17411a5E1BF01A82  
 
 
 ## Contact Us
@@ -37,8 +37,8 @@ Guild Implementation: 0x653F9F652e5320076aF00C6a17411a5E1BF01A82
 #### Daniel
 [![alt text][1.1]][DANIEL-twitter]
 [![alt text][6.1]][DANIEL-github]
-#### Kyle
-[![alt text][1.1]][KYLE-twitter]
+#### o080o
+anon
 #### Pat
 [![alt text][1.1]][PAT-twitter]
 
@@ -73,7 +73,6 @@ Guild Implementation: 0x653F9F652e5320076aF00C6a17411a5E1BF01A82
 [DANIEL-github]: http://www.github.com/denvercitizen9
 [BILL-twitter]: http://www.twitter.com/webthe3rd
 [BILL-github]: http://www.github.com/webthethird
-[KYLE-twitter]: http://www.twitter.com/kyleschutter
 [PAT-twitter]: http://www.twitter.com/patonchain
 
 <!-- Please don't remove this: Grab your social icons from https://github.com/carlsednaoui/gitsocial -->
