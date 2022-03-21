@@ -38,7 +38,7 @@ Guild Implementation: 0x653F9F652e5320076aF00C6a17411a5E1BF01A82
 [![alt text][1.1]][DANIEL-twitter]
 [![alt text][6.1]][DANIEL-github]
 #### o080o
-anon
+[![alt text][6.1]][8-github]
 #### Pat
 [![alt text][1.1]][PAT-twitter]
 
@@ -74,5 +74,6 @@ anon
 [BILL-twitter]: http://www.twitter.com/webthe3rd
 [BILL-github]: http://www.github.com/webthethird
 [PAT-twitter]: http://www.twitter.com/patonchain
+[8-github]: http://www.github.com/o0880o
 
 <!-- Please don't remove this: Grab your social icons from https://github.com/carlsednaoui/gitsocial -->
