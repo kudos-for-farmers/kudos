@@ -79,7 +79,7 @@ contract KudosVolunteerBoard is ReentrancyGuardUpgradeable, PausableUpgradeable 
 
     function claimTaskReward(
         bytes32 taskId
-    ) public nonReentrant whenNotPaused onlyKudosGuild isInitialized returns (bool) {
+    ) public nonReentrant whenNotPaused isInitialized returns (bool) {
         VolunteerTask storage task = tasks[taskId];
         require(task.startTime < block.timestamp, "Task has not begun yet.");
         require(task.endTime >= block.timestamp, "Task has already ended.");
