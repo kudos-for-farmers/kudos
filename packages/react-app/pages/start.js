@@ -27,7 +27,7 @@ function Home({ web3 }) {
 
   let  claimTask= async ()=>{
     await claim(web3, contracts, taskId);
-    router.push("/thankyou");
+    router.push("/");
   }
 
   return (
@@ -42,11 +42,9 @@ function Home({ web3 }) {
       {/* Main Page Content start */}
       <div className="flex flex-1 flex-col w-full items-center">
         <Card>
-          <Title>Claim your Kudos!</Title>
-          <Button onClick={claimTask}> Claim Kudos </Button>
+          <Title>Welcome to Farm Kudos!</Title>
         </Card>
       </div>
-      <Footer/>
     </>
   );
 }

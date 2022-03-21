@@ -172,10 +172,6 @@ function Home({ web3 }) {
       await guildContract.setVote(id, amount);
       console.log(`voted on proposal ${id} with ${amount} voting power`);
       setProposals((state)=>{return null})
-      router.push({
-        pathname: '/proposals',
-        query: {pid: id}
-      })
     }
   }
 

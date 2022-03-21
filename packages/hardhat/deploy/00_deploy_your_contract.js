@@ -58,7 +58,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     // // see docs in ERC20Guild.sol for docs
     await kudosGuild.functions.initialize2(
       votingToken.address,
-      120,   // uint256 _proposalTime,
+      45,   // uint256 _proposalTime,
       600000,   // uint256 _timeForExecution,
       1,      // uint256 _votingPower,
       // 1,      // uint256 _votingPowerForProposalExecution,
