@@ -48,6 +48,9 @@ contract KudosGuild is ERC20Guild, KudosGuildStorage, OwnableUpgradeable {
         callPermissions[_kudosToken]
             [bytes4(keccak256("mint(address,uint256)"))]
             =block.timestamp;
+        callPermissions[_volunteerBoard]
+            [bytes4(keccak256("createTaskNow(address,uint256,uint256,string,string,uint256,bytes"))]
+            =block.timestamp;
     }
 
     function checkKudosGuild() public pure returns (bytes32) {
