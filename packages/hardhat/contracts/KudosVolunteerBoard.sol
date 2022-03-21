@@ -17,11 +17,13 @@ contract KudosVolunteerBoard is ReentrancyGuardUpgradeable, PausableUpgradeable 
     using MathUpgradeable for uint256;
     using Arrays for uint256[];
 
-    AllocationToken daoToken;
-    KudosToken kudos;
+    address public daoToken;
+    address public kudos;
     uint256 public taskNonce;
     bool public initialized = false;
     bytes32[] public taskIds;
+    // keccack256("KUDOS_VOLUNTEER_BOARD")
+    bytes32 internal constant KUDOS_VOLUNTEER_BOARD = 0x054825a47b9cc6bed10b535eda45fa520a7f596c850137c8d5a5bf0b06a75da8;
 
     struct VolunteerTask {
         address creator;
@@ -32,10 +34,10 @@ contract KudosVolunteerBoard is ReentrancyGuardUpgradeable, PausableUpgradeable 
         string  taskName;
         string  description;
         uint256 maxClaims;
-        uint256 kudosRemaining;
         bytes   contentHash;
+        mapping(address => uint256) claimedBy;
     }
-    mapping(bytes32 => VolunteerTask) tasks;
+    mapping(bytes32 => VolunteerTask) public tasks;
 
     event TaskCreated(bytes32 indexed taskId);
 
@@ -53,10 +55,14 @@ contract KudosVolunteerBoard is ReentrancyGuardUpgradeable, PausableUpgradeable 
         address _daoToken,
         address _kudosToken
     ) public virtual initializer {
-        daoToken = AllocationToken(_daoToken);
-        kudos = KudosToken(_kudosToken);
+        daoToken = _daoToken;
+        kudos = _kudosToken;
         taskNonce = 0;
         initialized = true;
+    }
+
+    function checkVolunteerBoard() public pure returns (bytes32) {
+        return KUDOS_VOLUNTEER_BOARD;
     }
 
     function createTaskNow(
@@ -68,8 +74,21 @@ contract KudosVolunteerBoard is ReentrancyGuardUpgradeable, PausableUpgradeable 
         uint256 _maxClaims,
         bytes memory _contentHash
     ) public nonReentrant whenNotPaused onlyKudosGuild isInitialized returns (bytes32) {
-        require(daoToken.balanceOf(msg.sender) >= kudos.mintedByGuild(msg.sender) + _kudosReward * _maxClaims, "Guild does not have sufficient allocation.");
         return _createTask(_creator, block.timestamp, block.timestamp.add(_duration), _kudosReward, _taskName, _description, _maxClaims, _contentHash);
+    }
+
+    function claimTaskReward(
+        bytes32 taskId
+    ) public nonReentrant whenNotPaused onlyKudosGuild isInitialized returns (bool) {
+        VolunteerTask storage task = tasks[taskId];
+        require(task.startTime < block.timestamp, "Task has not begun yet.");
+        require(task.endTime >= block.timestamp, "Task has already ended.");
+        require(task.maxClaims > 0, "Task has already been claimed the maximum number of times.");
+
+        task.maxClaims -= 1;
+        task.claimedBy[_msgSender()] += task.kudosReward;
+
+        return KudosToken(kudos).mintFromCommitted(task.guildAddress, _msgSender(), taskId, task.kudosReward);
     }
 
     function _createTask(
@@ -84,7 +103,7 @@ contract KudosVolunteerBoard is ReentrancyGuardUpgradeable, PausableUpgradeable 
     ) internal returns (bytes32) {
         bytes32 taskId =
             keccak256(
-                abi.encodePacked(msg.sender, block.timestamp, taskNonce)
+                abi.encodePacked(_msgSender(), block.timestamp, taskNonce)
             );
         taskNonce = taskNonce.add(1);
         VolunteerTask storage newTask = tasks[taskId];
@@ -95,8 +114,12 @@ contract KudosVolunteerBoard is ReentrancyGuardUpgradeable, PausableUpgradeable 
         newTask.taskName = _taskName;
         newTask.description = _description;
         newTask.maxClaims = _maxClaims;
-        newTask.kudosRemaining = _kudosReward;
         newTask.contentHash = _contentHash;
+
+        require(
+            KudosToken(kudos).commitToReward(_msgSender(), taskId, _kudosReward * _maxClaims),
+            "Failed to commit to Kudos reward for new VolunteerTask. Aborting."
+        );
 
         emit TaskCreated(taskId);
         taskIds.push(taskId);
