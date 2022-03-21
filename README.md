@@ -8,7 +8,7 @@
 
 The scaffold-eth user experience will be simplified in a way that the user will not be aware that they are using web3 technologies and modern approaches.  The UI will be familiar, requiring only an email address for login with a Magic Link.  Tokens will be held in "no-custodial" wallets; private keys will not be known or necessary as the tokens are unable to be transferred.  Users can be airdropped rewards, or will be able to scan a QR code to validate participation.  We may consider adding options for participants to control their wallets but the current priority is ease of use and lowering barriers to entry. 
 
-A bigger picture aspect which will be developed with the input of stakeholders across the state is a new LCA/DAO for the agrigultural community.  This will provide a novel way for everyone directly involved in our ecosystem to contribute to the success of Colorado agriculture.
+A bigger picture aspect which will be developed with the input of stakeholders across the state is a new LCA/DAO for the agrigultural community.  This will provide a novel way for everyone directly involved in our ecosystem to contribute to the success of Colorado agriculture.  
 
 <img src="media/dao-uml.jpg">
 
@@ -16,7 +16,7 @@ We will use the guild model to identify any group involved in Colorado agricultu
 
 <img src="media/guild-uml.jpg">
 
-Digging deeper into the tech, both guilds and dao's will be managed using the DX DAO guild and daostack models.  A future state may allow members to govern locally as well as at the regional or even global level.  This framework also allows for automated verification of proposals requiring kudos distributions.
+Digging deeper into the tech, both guilds and dao's will be managed using the DX DAO guild and daostack models.  Guild tokens will allow Guild Members to govern locally.  All distributions will be handled as proposals.  New task struct (extension of proposal) enables scheduling of future rewards which members are able to claim across multiple guilds, but from a singular volunteer task board.
 
 
 ## Harmony Deployment Info (Testnet)  
