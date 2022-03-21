@@ -115,6 +115,7 @@ contract KudosVolunteerBoard is ReentrancyGuardUpgradeable, PausableUpgradeable 
         newTask.description = _description;
         newTask.maxClaims = _maxClaims;
         newTask.contentHash = _contentHash;
+        newTask.guildAddress = _msgSender();
 
         require(
             KudosToken(kudos).commitToReward(_msgSender(), taskId, _kudosReward * _maxClaims),

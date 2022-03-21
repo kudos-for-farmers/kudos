@@ -8,7 +8,6 @@ import { userMap } from "../helpers/FakeUsers";
 
 import {Typography, Divider, Card, Form, Input, InputNumber, Button} from 'antd';
 const {Title, Text } = Typography;
-
 async function lockAllVotingTokens(web3, contracts) {
   let signer = web3.userSigner;
   let guildContract=contracts["KudosGuild"].connect(signer);
@@ -23,23 +22,21 @@ async function lockAllVotingTokens(web3, contracts) {
   }
 }
 
-async function proposeKudoClaim(web3, contracts, {duration, amount, name, description, maxClaims}) {
+async function proposeKudoDistribution(web3, contracts, recipient, amount, description) {
   let signer = web3.userSigner;
     let guildContract=contracts["KudosGuild"].connect(signer);
-    let boardContract=contracts["KudosVolunteerBoard"];
+    let kudosContract=contracts["KudosToken"];
+
+    let data = kudosContract.interface.encodeFunctionData("mint", [recipient, amount]);
+    let hash = kudosContract.interface.getSighash("mint");
 
     let contentHash = "0xFF";
-    let durationInSeconds=duration*86400
-  console.log("form data:", durationInSeconds, amount, name, description, maxClaims);
-    let data = boardContract.interface.encodeFunctionData("createTaskNow", [signer.address, durationInSeconds, amount, name, description, maxClaims, contentHash]);
-    let hash = boardContract.interface.getSighash("createTaskNow");
-
-    let tx = await guildContract.createProposal([boardContract.address], [data], [0], description, contentHash);
+    let tx = await guildContract.createProposal([kudosContract.address], [data], [0], description, contentHash);
     let receipt = await tx.wait();
     let event = receipt.events.find(event=>event.event==='ProposalCreated');
     const [id] = event.args;
     console.log(tx, event.args);
-    console.log(`submit new proposal ${id} to distribute ${amount} kudos for ${description}`);
+    console.log(`submit new proposal ${id} to distribute ${amount} kudos to ${recipient}: ${description}`);
     return id
 }
 
@@ -61,7 +58,7 @@ function Home({ web3 }) {
     let description = values.description;
     let amount = parseInt(values.amount);
     console.log(web3, contracts, recipient, amount, description);
-    let id = await proposeKudoClaim(web3, contracts, values);
+    let id = await proposeKudoDistribution(web3, contracts, recipient, amount, description)
     router.push({
       pathname: '/proposals',
       query: {pid: id}
@@ -79,18 +76,9 @@ function Home({ web3 }) {
 
       {/* Main Page Content start */}
       <div className="flex flex-1 flex-col h-screen w-full items-center">
-        <Title>Propose a future Kudo claim</Title>
+        <Title>Propose a Kudo reward</Title>
         <Card>
           <Form requiredMark='optional' onFinish={onFormSubmit}>
-            <Form.Item
-              label="What is the name of this task"
-              name="name"
-              rules={[
-                {required: true, message: "The proposal description is required"}
-              ]}
-            >
-              <Input/>
-            </Form.Item>
             <Form.Item
               label="What are the Kudos for"
               name="description"
@@ -102,6 +90,16 @@ function Home({ web3 }) {
             </Form.Item>
 
             <Form.Item
+              label="Recipient email address"
+              name="address"
+              rules={[
+                {required: true, message: "The recipient's email address is required"},
+                {type: "email", message: "The recipient's email address does not look like a valid email address"},
+              ]}
+            >
+              <Input/>
+            </Form.Item>
+            <Form.Item
               label="The amount of Kudos to award"
               name="amount"
               rules={[
@@ -110,28 +108,6 @@ function Home({ web3 }) {
               ]}
             >
               <InputNumber min={0} max={100}/>
-            </Form.Item>
-
-            <Form.Item
-              label="Max times it can be claimed"
-              name="maxClaims"
-              rules={[
-                {required: true, message: "The amount of claims is required"},
-                {type: "integer", message: "the amount of claims must be a whole number"},
-              ]}
-            >
-              <InputNumber min={0}/>
-            </Form.Item>
-
-            <Form.Item
-              label="Claim time (days)"
-              name="duration"
-              rules={[
-                {required: true, message: "The claim duration is required"},
-                {type: "integer", message: "the claim duration must be a whole number"},
-              ]}
-            >
-              <InputNumber min={0} max={360}/>
             </Form.Item>
 
             <Form.Item>

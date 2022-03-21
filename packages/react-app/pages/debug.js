@@ -1,46 +1,8 @@
 import React, { useContext, useState } from "react";
-import { Contract, Account, Header } from "../components";
+import { Contract, Account, Header, Footer } from "../components";
 import { Web3Consumer } from "../helpers/Web3Context";
 import { useContractLoader } from "eth-hooks";
 import Link from "next/link";
-
-
-
-// async function submitProposal(web3, contract, functionName, values) {
-//   let callData=encodeFunction(contract, functionName, values);
-//   let hash="..";
-//   let proposalData={
-//     to: [
-//       contract.address,
-//     ],
-//     data: [
-//       callData,
-//     ],
-//     value: [
-//       0,
-//     ],
-//     titleText: "my Proposal", //TODO lol
-//     descriptionHash: "" // we are not using IPFS hashes yet
-//   }
-//   //for now just log it, later would submit directly to the guild contract
-//   console.log(proposalData);
-
-// }
-// function encodeFunction(contract, fnName, values) {
-//   // console.log(contract, fnName, values)
-//   // let entries=Object.entries(contract.interface.functions);
-//   // let [fnSignature, fnInterface]= entries.find((entry)=>{return entry[1].name == fnName});
-//   // let fnSignatureEncoded = lib.eth.abi.encodeFunctionSignature(fnSignature);
-//   // let parameters = contract.interface.function[functionName];
-//   // let fnParametersEncoded = lib.eth.abi.encodeParameters(parameters, values).substring(2);
-
-//   // return fnSignatureEncoded + fnParametersEncoded;
-//   return contract.interface.encodeFunctionData(fnName, values);
-// }
-
-// function formatInputs(inputs){
-
-// }
 
 function useLockVotingTokens(web3) {
   let contracts = useContractLoader(web3.localProvider, web3.contractConfig);
@@ -122,7 +84,7 @@ function useProposalForm() {
   return [state, setState];
 }
 
-function Home({ web3 }) {
+function Debug({ web3 }) {
   console.log(`🗄 web3 context:`, web3);
 
   let contracts = useContractLoader(web3.localProvider, web3.contractConfig);
@@ -152,14 +114,7 @@ function Home({ web3 }) {
           <Account {...web3} />
         </div>
       </div>
-      {/* Page Header start */}
-      <div className="flex flex-1 flex-col w-full items-center">
-        <div className="text-center" style={{ margin: 64 }}>
-          <Link href="/kudos">kudos</Link> |
-           | <Link href="/">proposals</Link> |
-           | <Link href="/debug">developer screen</Link>
-        </div>
-      </div>
+      <Footer/>
       {/* Main Page Content start */}
 
       <div className="flex flex-1 flex-col h-screen w-full items-center">
@@ -191,6 +146,14 @@ function Home({ web3 }) {
             End
           </div>
 
+          <Contract
+            name="KudosVolunteerBoard"
+            signer={web3.userSigner}
+            provider={web3.localProvider}
+            address={web3.address}
+            blockExplorer={web3.blockExplorer}
+            contractConfig={web3.contractConfig}
+          />
           <Contract
             name="GuildVotingToken"
             signer={web3.userSigner}
@@ -229,4 +192,4 @@ function Home({ web3 }) {
   );
 }
 
-export default Web3Consumer(Home);
+export default Web3Consumer(Debug);

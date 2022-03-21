@@ -1,57 +1,24 @@
-import React, { useContext, useState } from "react";
-import { Contract, Account, Header, Footer } from "../components";
+import React, { useEffect, useState } from "react";
+import { Contract, Account, Header, Footer, KudoBalance } from "../components";
 import { Web3Consumer } from "../helpers/Web3Context";
 import { useContractLoader } from "eth-hooks";
 import Link from "next/link";
 import { useRouter } from "next/router";
-
-import {Typography, Divider, Card, Form, Input, InputNumber, Button} from 'antd';
+import { userMap } from "../helpers/FakeUsers";
+import {Progress, Typography, Divider, Descriptions, Card, Form, Statistic, Input, InputNumber, Button} from 'antd';
 const {Title, Text } = Typography;
 
-function useLockVotingTokens(web3) {
-  let contracts = useContractLoader(web3.localProvider, web3.contractConfig);
+async function lockAllVotingTokens(web3, contracts) {
   let signer = web3.userSigner;
+  let guildContract=contracts["KudosGuild"].connect(signer);
+  let votingTokenContract=contracts["GuildVotingToken"].connect(signer);
 
-  return async () => {
-    let guildContract=contracts["KudosGuild"].connect(signer);
-    let votingTokenContract=contracts["GuildVotingToken"].connect(signer);
-
-    let amount = await votingTokenContract.balanceOf(web3.address);
+  let amount = await votingTokenContract.balanceOf(web3.address);
+  if (amount>0){
     let vaultAddress = await guildContract.tokenVault();
     await votingTokenContract.approve(vaultAddress, amount);
     await guildContract.lockTokens(amount);
     console.log(`locked ${amount} voting tokens with the guild.`);
-  }
-}
-
-async function proposeKudoDistribution(web3, contracts, recipient, amount, description) {
-  let signer = web3.userSigner;
-    let guildContract=contracts["KudosGuild"].connect(signer);
-    let kudosContract=contracts["KudosToken"];
-
-    let data = kudosContract.interface.encodeFunctionData("mint", [recipient, amount]);
-    let hash = kudosContract.interface.getSighash("mint");
-
-    let contentHash = "0xFF";
-    let tx = await guildContract.createProposal([kudosContract.address], [data], [0], description, contentHash);
-    let receipt = await tx.wait();
-    let event = receipt.events.find(event=>event.event==='ProposalCreated');
-    const [id] = event.args;
-    console.log(tx, event.args);
-    console.log(`submit new proposal ${id} to distribute ${amount} kudos to ${recipient}: ${description}`);
-    return id
-}
-
-
-function useEndProposal(web3, proposal) {
-  let contracts = useContractLoader(web3.localProvider, web3.contractConfig);
-  let signer = web3.userSigner;
-
-  return async () => {
-    let {id} = proposal
-    let guildContract=contracts["KudosGuild"].connect(signer);
-    await guildContract.endProposal(id);
-    console.log(`completed proposal ${id}`);
   }
 }
 
@@ -73,38 +40,88 @@ async function getAllProposals(web3, contracts) {
 
 async function getProposal(web3, contracts, id) {
   let guildContract=contracts["KudosGuild"];
-  const proposal=await guildContract.proposals(id);
-  return {
-    id: id,
-    proposal: proposal,
-    votes: proposal.totalVotes,
-    description: proposal[3],
-    endTime: proposal.endTime,
+  let kudosContract=contracts["KudosToken"];
+  let boardContract=contracts["KudosVolunteerBoard"];
+
+  const proposal=await guildContract.getProposal(id);
+  console.log("fetched proposal:", proposal);
+  let contractAddress=proposal.to[0];
+  if (contractAddress == boardContract.address) {
+    let data=proposal.data[0];
+    let [ proposer, duration, amount, name, description, maxClaims, contentHash ] =boardContract.interface.decodeFunctionData("createTaskNow", data);
+    let sigHash = boardContract.interface.getSighash("createTaskNow");
+    console.log("decoded", proposer, duration, amount, name, description, maxClaims, contentHash);
+    console.log("sighash", sigHash);
+
+    return {
+      amount: amount,
+      duration: duration,
+      maxClaims: maxClaims,
+      id: id,
+      proposal: proposal,
+      votes: proposal.totalVotes,
+      name: name,
+      description: proposal.description,
+      endTime: proposal.endTime,
+      snapshotId: proposal.snapshotId,
+    }
+  } else if (contractAddress == kudosContract.address) {
+    let data=proposal.data[0];
+    let { to, amount }=kudosContract.interface.decodeFunctionData("mint", data);
+    let [email, address] = Object.entries(userMap(web3.userSigner.address))
+        .find((([key, value])=>value==to))
+
+    return {
+      recipient: email,
+      amount: amount,
+      id: id,
+      proposal: proposal,
+      votes: proposal.totalVotes,
+      description: proposal.description,
+      endTime: proposal.endTime,
+      snapshotId: proposal.snapshotId,
+    }
+  } else {
+    return {
+      recipient: "unknown",
+      amount: "unknown",
+      id: id,
+      proposal: proposal,
+      votes: proposal.totalVotes,
+      description: proposal.description,
+      endTime: proposal.endTime,
+      snapshotId: proposal.snapshotId,
+    }
   }
 }
 
-function useProposalForm() {
-  let [state, setState] = useState({
-    id: null,
-    description: "Give some kudos!",
-    recipient: null,
-    amount: 0,
-  });
-
-  return [state, setState];
+function activeProposal(proposal){
+  let state=proposal.proposal.state;
+  return state === 1 || state === 0;
 }
 
 
-function Proposal({id, votes, description, endTime}, voteOnProposal) {
-  console.log(voteOnProposal);
+function Proposal({id, snapshotId, recipient, amount, votes, description, endTime}, voteOnProposal, endProposal) {
+  let neededVotes=1; //TODO get this from the contract...
+  let percent = (votes/neededVotes) * 100;
+  let type=votes>=neededVotes? "success" : "";
   return (
     <Card>
-      <Title>reason: {description}</Title>
-      <p>{"someone"} will recieve {"some amount of"} kudos</p>
-      <p>three were {votes.toString()} votes for this proposal</p>
-      <p>it will end at {endTime.toString()} time</p>
-      <p>it is currently {new Date().getTime()/1000} time</p>
-      <Button onClick={voteOnProposal(id)}>Vote</Button>
+      <Text strong>Awarded for:  </Text><Text>{description}</Text> <br/>
+      {recipient &&<span><Text strong>Recipient:  </Text><Text>{recipient}</Text><br/></span>}
+      <Text strong>Amount:  </Text><Text>{amount.toString()} Kudos</Text> <br/>
+      <br/>
+      {/*
+      <Descriptions.Item label="Kudos">{amount}</Descriptions.Item>
+      <Descriptions.Item label="Votes">{votes.toString()}</Descriptions.Item>
+        */}
+      <Statistic.Countdown title="voting time remaining" value={endTime*1000}/>
+      <Progress percent={percent} showInfo={false}/>
+      <Text strong type={type}>{`${votes}/${neededVotes} votes`}</Text>
+      <br/>
+
+      <Button onClick={voteOnProposal({id, snapshotId})}>Vote</Button>
+      <Button onClick={endProposal(id)}>End</Button>
     </Card>
   );
 }
@@ -114,9 +131,23 @@ function Home({ web3 }) {
   let contracts = useContractLoader(web3.localProvider, web3.contractConfig);
   console.log('contracts:', contracts);
 
-  let router = useRouter();
-  let proposalId = router.query.pid;
+  if(contracts["KudosGuild"]){
+    lockAllVotingTokens(web3, contracts); //TODO should do this everywhere, anytime, all the time. but really only on first page load.
+  }
+
   let [proposals, setProposals] = useState();
+  let router = useRouter();
+  // useEffect(()=>{
+  //   const handleStart=(url)=>{
+  //     console.log("route start")
+  //     setProposals(null);
+  //   }
+  //   router.events.on('routeChangeStart', handleStart)
+  //   return ()=>{
+  //     router.events.off('routeChangeStart', handleStart)
+  //   }
+  // }, [router]);
+  let proposalId = router.query.pid;
 
   console.log("proposals", proposals)
   if(contracts["KudosGuild"] && !proposals) {
@@ -131,42 +162,50 @@ function Home({ web3 }) {
   }
   proposals=proposals || [];
 
-  let voteOnProposal=function(id){
+  let voteOnProposal=function({id, snapshotId}){
     return async ()=>{
       let signer = web3.userSigner;
-      console.log(`voting on proposal ${id}...`);
       let guildContract=contracts["KudosGuild"].connect(signer);
-      let amount = await guildContract.votingPowerOf(signer.address);
+      let amount = await guildContract.votingPowerOfAt(signer.address, snapshotId);
+      console.log(`voting on proposal ${id} with ${amount} voting power...`);
       console.log(guildContract, guildContract.setVote, id, amount);
       await guildContract.setVote(id, amount);
       console.log(`voted on proposal ${id} with ${amount} voting power`);
       setProposals((state)=>{return null})
-      router.replace({
+      router.push({
         pathname: '/proposals',
         query: {pid: id}
       })
     }
   }
 
-  console.log("proposals:", proposals)
+  let endProposal=function(id){
+    return async ()=>{
+      let signer = web3.userSigner;
+      let guildContract=contracts["KudosGuild"].connect(signer);
+      await guildContract.endProposal(id);
+      console.log(`completed proposal ${id}`);
+    }
+  }
 
   return (
     <>
 
       <div className="flex flex-1 justify-between items-center">
         <Header />
+        <KudoBalance />
       </div>
+      <Footer/>
 
       {/* Main Page Content start */}
-      <div className="flex flex-1 flex-col h-screen w-full items-center">
+      <div className="flex flex-1 flex-col w-full items-center">
         {proposalId?(<Title>Proposal</Title>):(<Title>All Proposals</Title>)}
         <Card>
           {
-            proposals.map((p)=>{return Proposal(p, voteOnProposal)})
+            proposals.filter(activeProposal).map((p)=>{return Proposal(p, voteOnProposal, endProposal)})
           }
         </Card>
       </div>
-      <Footer/>
     </>
   );
 }

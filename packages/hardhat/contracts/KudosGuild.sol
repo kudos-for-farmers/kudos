@@ -42,6 +42,7 @@ contract KudosGuild is ERC20Guild, KudosGuildStorage, OwnableUpgradeable {
 	        _permissionDelay
         );
 
+
         kudosToken = _kudosToken;
         volunteerBoard = _volunteerBoard;
 
@@ -49,7 +50,7 @@ contract KudosGuild is ERC20Guild, KudosGuildStorage, OwnableUpgradeable {
             [bytes4(keccak256("mint(address,uint256)"))]
             =block.timestamp;
         callPermissions[_volunteerBoard]
-            [bytes4(keccak256("createTaskNow(address,uint256,uint256,string,string,uint256,bytes"))]
+            [bytes4(keccak256("createTaskNow(address,uint256,uint256,string,string,uint256,bytes)"))]
             =block.timestamp;
     }
 

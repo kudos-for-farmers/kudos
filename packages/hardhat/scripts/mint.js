@@ -11,7 +11,7 @@ const main = async () => {
   const guild = await ethers.getContract('KudosGuild');
 	await votingTokens.functions.mint(
 		"0x2965e453EC5D8E719f7314aAfb6F136C75b03D35",
-		1000
+		1
 	);
 
 	await allocationTokens.functions.mint(
